@@ -22,5 +22,5 @@ if __name__ == '__main__':
     if 1 < len(args):
         conv(args[1])
     else:
-        conv('data/tet.mp4')
-        print("動画の名前を記述して下さい。ex) test.mp4")
+        conv('data/2.mp4')
+        print("動画のパスを記入して下さい。ex) data/test.mp4")

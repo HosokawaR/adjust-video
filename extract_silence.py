@@ -1,12 +1,14 @@
 import subprocess
+from datetime import datetime
 
 import numpy as np
 import soundfile as sf
 from matplotlib import pyplot as plt
 
 silence_threshold = 0.01
-MIN_SILENCE_DURATION = 0.5  # これより長い無音は早送りされる
-MIN_NOISE_DURATION = 0.2  # これより短い音は静音と解釈される
+MIN_SILENCE_DURATION = 1  # これより長い無音は早送りされる
+MIN_NOISE_DURATION = 0.2  # これより短い音は無視される
+MIN_PADDING_DURATION = 0.1  # 有音の前後に早送りしない余白を設ける
 
 
 def extract_silence(file_path):
@@ -45,13 +47,18 @@ def extract_silence(file_path):
         silence = {"from": silences[0]["from"], "to": silences[0]["to"], "suffix": "cut"}
         for i in range(len(silences) - 1):
             interval = (silences[i + 1]["from"] - silences[i]["to"]) / sample_rate
-            if interval < MIN_NOISE_DURATION:
+            if interval < MIN_NOISE_DURATION * 2:
                 silence["to"] = silences[i + 1]["to"]
             else:
                 masks.append(silence)
                 silence = {"from": silences[i + 1]["from"], "to": silences[i + 1]["to"], "suffix": "cut"}
     else:
         masks = silences
+
+    # 無音の前後に処理しない余白を追加
+    for i in range(len(masks)):
+        masks[i]["from"] += int(MIN_PADDING_DURATION * sample_rate)
+        masks[i]["to"] -= int(MIN_PADDING_DURATION * sample_rate)
 
     # グラフ表示用の処理
     cut_range = np.zeros(len(data))
@@ -60,6 +67,7 @@ def extract_silence(file_path):
     plt.figure(figsize=(18, 6))
     plt.plot(t, data)
     plt.plot(t, cut_range)
+    plt.title(datetime.now().trftime('%Y年%m月%d日 %H:%M:%S'))
     plt.show()
 
     for i in range(len(masks)):
