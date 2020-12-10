@@ -5,10 +5,7 @@ import numpy as np
 import soundfile as sf
 from matplotlib import pyplot as plt
 
-silence_threshold = 0.01
-MIN_SILENCE_DURATION = 1  # これより長い無音は早送りされる
-MIN_NOISE_DURATION = 0.2  # これより短い音は無視される
-MIN_PADDING_DURATION = 0.1  # 有音の前後に早送りしない余白を設ける
+from settings import MIN_NOISE_DURATION, MIN_PADDING_DURATION, MIN_SILENCE_DURATION, SILENCE_THRESHOLD_RATE
 
 
 def extract_silence(file_path):
@@ -26,6 +23,7 @@ def extract_silence(file_path):
     silences = []
     prev_is_overed = 0
     entered = 0
+    silence_threshold = max(data) * SILENCE_THRESHOLD_RATE
     is_overeds = silence_threshold < np.abs(data)
     for i, is_overed in enumerate(is_overeds):
         if prev_is_overed and not is_overed:
@@ -67,7 +65,7 @@ def extract_silence(file_path):
     plt.figure(figsize=(18, 6))
     plt.plot(t, data)
     plt.plot(t, cut_range)
-    plt.title(datetime.now().trftime('%Y年%m月%d日 %H:%M:%S'))
+    plt.title(file_path + ' ' + datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
     plt.show()
 
     for i in range(len(masks)):

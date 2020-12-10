@@ -1,3 +1,6 @@
+from settings import SILENCE_SPEED_RATE
+
+
 def gen_filter(masks, sound_time):
     # TODO: もっとスマートな実装を考える
     txt = ""
@@ -9,9 +12,9 @@ def gen_filter(masks, sound_time):
 
     for i in range(len(masks) - 1):
         txt += f"[0:v]trim={masks[i]['from']}:{masks[i]['to']}," \
-               f"setpts=0.25*(PTS-STARTPTS)[v{count}];"
+               f"setpts={1 / SILENCE_SPEED_RATE}*(PTS-STARTPTS)[v{count}];"
         txt += f"[0:a]atrim={masks[i]['from']}:{masks[i]['to']}," \
-               f"asetpts=PTS-STARTPTS,atempo=4[a{count}];"
+               f"asetpts=PTS-STARTPTS,atempo={SILENCE_SPEED_RATE}[a{count}];"
         count += 1
         txt += f"[0:v]trim={masks[i]['to']}:{masks[i + 1]['from']}," \
                f"setpts=PTS-STARTPTS[v{count}];"
@@ -19,12 +22,12 @@ def gen_filter(masks, sound_time):
                f"asetpts=PTS-STARTPTS[a{count}];"
         count += 1
 
-    txt += f"[0:v]trim={masks[-1]['from']}:{masks[-1]['to']},setpts=0.25*(PTS-STARTPTS)[v{count}];"
-    txt += f"[0:a]atrim={masks[-1]['from']}:{masks[-1]['to']},asetpts=PTS-STARTPTS,atempo=4[a{count}];"
+    txt += f"[0:v]trim={masks[-1]['from']}:{masks[-1]['to']},setpts={1 / SILENCE_SPEED_RATE}*(PTS-STARTPTS)[v{count}];"
+    txt += f"[0:a]atrim={masks[-1]['from']}:{masks[-1]['to']},asetpts=PTS-STARTPTS,atempo={SILENCE_SPEED_RATE}[a{count}];"
     count += 1
     if masks[-1]["to"] < sound_time:
-        txt += f"[0:v]trim={masks[-1]['from']}:{masks[-1]['to']},setpts=PTS-STARTPTS[v{count}];"
-        txt += f"[0:a]atrim={masks[-1]['from']}:{masks[-1]['to']},asetpts=PTS-STARTPTS[a{count}];"
+        txt += f"[0:v]trim={masks[-1]['to']}:{sound_time},setpts=PTS-STARTPTS[v{count}];"
+        txt += f"[0:a]atrim={masks[-1]['to']}:{sound_time},asetpts=PTS-STARTPTS[a{count}];"
 
     for n in range(count + 1):
         txt += f"[v{n}][a{n}]"
