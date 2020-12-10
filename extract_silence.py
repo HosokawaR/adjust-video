@@ -1,21 +1,22 @@
-import os
+import subprocess
 
 import numpy as np
 import soundfile as sf
 from matplotlib import pyplot as plt
 
 silence_threshold = 0.01
-min_silence_duration = 0.5
-min_keep_duration = 0.2
+MIN_SILENCE_DURATION = 0.5  # これより長い無音は早送りされる
+MIN_NOISE_DURATION = 0.2  # これより短い音は静音と解釈される
 
 
-def extract_silence():
+def extract_silence(file_path):
     """
     音声トラックから無音部分の時間区間をsで返す
     :return: [{from: int, to: int, suffix: string}[], 長さ]
     """
-    src_file = os.path.join("data", "_.wav")
-    data, sample_rate = sf.read(src_file)
+    cmd = f"ffmpeg -i {file_path} -ac 1 -ar 44100 -acodec pcm_s16le data/_.wav"
+    subprocess.call(cmd.split(' '))
+    data, sample_rate = sf.read("data/_.wav")
     # 時刻(s) = 音声データ / 周波数
     t = np.arange(0, len(data)) / sample_rate
 
@@ -29,7 +30,7 @@ def extract_silence():
             entered = i
         if not prev_is_overed and is_overed:
             duration = (i - entered) / sample_rate
-            if min_silence_duration < duration:
+            if MIN_SILENCE_DURATION < duration:
                 silences.append({"from": entered, "to": i, "suffix": "cut"})
                 entered = 0
         prev_is_overed = is_overed
@@ -44,7 +45,7 @@ def extract_silence():
         silence = {"from": silences[0]["from"], "to": silences[0]["to"], "suffix": "cut"}
         for i in range(len(silences) - 1):
             interval = (silences[i + 1]["from"] - silences[i]["to"]) / sample_rate
-            if interval < min_keep_duration:
+            if interval < MIN_NOISE_DURATION:
                 silence["to"] = silences[i + 1]["to"]
             else:
                 masks.append(silence)
