@@ -1,6 +1,7 @@
 動画の無音部分を自動で早送りするプログラム
 
 # 使い方
+0. main.pyと同じ階層にdataフォルダを作る
 1. dataフォルダに処理したい動画を入れる。
 2. `python main.py 【動画ファイル名】`  
 ex) python main.py sample.mp4  
