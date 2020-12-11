@@ -13,6 +13,7 @@ def extract_silence(file_path):
     音声トラックから無音部分の時間区間をsで返す
     :return: [{from: int, to: int, suffix: string}[], 長さ]
     """
+
     cmd = f"ffmpeg -i {file_path} -ac 1 -ar 44100 -acodec pcm_s16le data/_.wav"
     subprocess.call(cmd.split(' '))
     data, sample_rate = sf.read("data/_.wav")
