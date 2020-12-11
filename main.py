@@ -8,6 +8,7 @@ from get_filter import gen_filter
 
 
 def conv(file_path, option):
+    subprocess.call('rm data/_.wav'.split(' '))
     masks, sound_time = extract_silence(file_path)
     # subprocessで渡す場合はfilter_complexの"は必要ない
     cmd = f"ffmpeg -i {file_path} -filter_complex "

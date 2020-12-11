@@ -89,8 +89,7 @@ def extract_silence(file_path):
     for i in range(len(masks)):
         masks[i]["num_from"] = round(masks[i]["from"] / sample_rate, 3)
         masks[i]["num_to"] = round(masks[i]["to"] / sample_rate, 3)
-        masks[i]["from"] = format_time(masks[i]["num_from"])
-        masks[i]["to"] = format_time(masks[i]["num_to"])
-        print(masks[i]["num_from"], masks[i]["from"])
+        # masks[i]["from"] = format_time(masks[i]["num_from"])
+        # masks[i]["to"] = format_time(masks[i]["num_to"])
 
     return [masks, max(t)]
