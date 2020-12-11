@@ -8,6 +8,23 @@ from matplotlib import pyplot as plt
 from settings import MIN_NOISE_DURATION, MIN_PADDING_DURATION, MIN_SILENCE_DURATION, SILENCE_THRESHOLD_RATE
 
 
+def format_time(time):
+    """
+    :param time: 小数点３桁の数
+    :return: 00:00:00.000 形式の文字列
+    """
+    h = int(time // (60 * 60))
+    time -= h * 60 * 60
+    m = int(time // 60)
+    time -= m * 60
+    s = int(time)
+    time -= s
+    ms = time - int(time)
+    ms = round(ms, 3)
+
+    return f"{str(h).zfill(2)}:{str(m).zfill(2)}:{str(s).zfill(2)}.{str(ms).replace('0.', '')}"
+
+
 def extract_silence(file_path):
     """
     音声トラックから無音部分の時間区間をsで返す
@@ -70,7 +87,10 @@ def extract_silence(file_path):
     plt.show()
 
     for i in range(len(masks)):
-        masks[i]["from"] = round(masks[i]["from"] / sample_rate, 3)
-        masks[i]["to"] = round(masks[i]["to"] / sample_rate, 3)
+        masks[i]["num_from"] = round(masks[i]["from"] / sample_rate, 3)
+        masks[i]["num_to"] = round(masks[i]["to"] / sample_rate, 3)
+        masks[i]["from"] = format_time(masks[i]["num_from"])
+        masks[i]["to"] = format_time(masks[i]["num_to"])
+        print(masks[i]["num_from"], masks[i]["from"])
 
     return [masks, max(t)]
