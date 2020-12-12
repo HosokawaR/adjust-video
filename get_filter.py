@@ -7,9 +7,9 @@ def gen_filter(masks, sound_time, option):
     txt = ""
     count = 0
     if masks[0]["num_from"] != 0:
-        txt += f"[0:v]trim=start=00:00:00:end={masks[0]['from']}," \
+        txt += f"[0:v]trim=start=0:end={masks[0]['from']}," \
                f"setpts={1 / base_speed}*(PTS-STARTPTS)[v{count}];"
-        txt += f"[0:a]atrim=start=00:00:00:end={masks[0]['from']}," \
+        txt += f"[0:a]atrim=start=0:end={masks[0]['from']}," \
                f"asetpts=PTS-STARTPTS,atempo={base_speed}[a{count}];"
         count += 1
 
