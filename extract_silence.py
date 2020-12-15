@@ -5,27 +5,10 @@ import numpy as np
 import soundfile as sf
 from matplotlib import pyplot as plt
 
-from settings import MIN_NOISE_DURATION, MIN_PADDING_DURATION, MIN_SILENCE_DURATION, SILENCE_THRESHOLD_RATE
+from settings import MIN_NOISE_DURATION, MIN_PADDING_DURATION, MIN_SILENCE_DURATION
 
 
-def format_time(time):
-    """
-    :param time: 小数点３桁の数
-    :return: 00:00:00.000 形式の文字列
-    """
-    h = int(time // (60 * 60))
-    time -= h * 60 * 60
-    m = int(time // 60)
-    time -= m * 60
-    s = int(time)
-    time -= s
-    ms = time - int(time)
-    ms = round(ms, 3)
-
-    return f"{str(h).zfill(2)}:{str(m).zfill(2)}:{str(s).zfill(2)}.{str(ms).replace('0.', '')}"
-
-
-def extract_silence(file_path):
+def extract_silence(file_path, option):
     """
     音声トラックから無音部分の時間区間をsで返す
     :return: [{from: int, to: int, suffix: string}[], 長さ]
@@ -41,7 +24,7 @@ def extract_silence(file_path):
     silences = []
     prev_is_overed = 0
     entered = 0
-    silence_threshold = max(data) * SILENCE_THRESHOLD_RATE
+    silence_threshold = max(data) * option['silence_threshold_rate']
     is_overeds = silence_threshold < np.abs(data)
     for i, is_overed in enumerate(is_overeds):
         if prev_is_overed and not is_overed:

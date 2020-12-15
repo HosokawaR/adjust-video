@@ -1,7 +1,7 @@
 def gen_filter(masks, sound_time, option):
-    if option['silence_speed']:
-        SILENCE_SPEED_RATE = option['silence_speed']
-    base_speed = option['base_speed']
+    SILENCE_SPEED_RATE = option['silence_speed']
+    BASE_SPEED = option['base_speed']
+    base_speed = BASE_SPEED
     silence_speed = base_speed * SILENCE_SPEED_RATE
     # TODO: もっとスマートな実装を考える
     txt = ""
